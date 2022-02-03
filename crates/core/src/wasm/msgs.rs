@@ -1,4 +1,5 @@
-pub use crate::core::{AccAddress, Coins};
+use crate::{AccAddress, Coins};
+
 pub struct MsgStoreCode {
     pub sender: AccAddress,
     pub wasm_byte_code: String,
