@@ -1,0 +1,8 @@
+[workspace]
+
+members = [
+    "crates/client/lcd",
+    "crates/tester",
+    "crates/core",
+    "crates/internal",
+]

@@ -1,0 +1,17 @@
+[package]
+name = "terra-sdk-internal"
+authors = ["William Chen <william@terran.one>"]
+description = "INTERNAL USE, utility macros for aiding Rust development on `terra-sdk`"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+proc-macro = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+proc-macro2 = "*"
+syn = "*"
+quote = "*"
+darling = "*"
