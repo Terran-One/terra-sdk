@@ -24,6 +24,7 @@ pub trait Msg {
 }
 
 #[derive(Msg)]
+#[msg_type("", proto = "")]
 pub struct MsgTest {
     pub address: String,
 }

@@ -1,7 +1,7 @@
 use proc_macro::TokenStream;
 mod msg;
 
-#[proc_macro_derive(Msg)]
+#[proc_macro_derive(Msg, attributes(msg_type, msg_type_proto))]
 pub fn derive_msg(input: TokenStream) -> TokenStream {
     msg::do_derive_msg(input)
 }
