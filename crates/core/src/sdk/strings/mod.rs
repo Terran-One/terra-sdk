@@ -1,8 +1,8 @@
-pub struct AccAddress(String);
-pub struct ValAddress(String);
-pub struct ValConsAddress(String);
-pub struct AccPubKey(String);
-pub struct ValPubKey(String);
+pub struct AccAddress(pub String);
+pub struct ValAddress(pub String);
+pub struct ValConsAddress(pub String);
+pub struct AccPubKey(pub String);
+pub struct ValPubKey(pub String);
 
 pub mod traits;
 pub use traits::*;
