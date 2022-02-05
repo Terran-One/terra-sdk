@@ -1,6 +1,6 @@
 // pub mod auth;
 // pub mod authz;
-// pub mod bank;
+pub mod bank;
 // pub mod distribution;
 // pub mod feegrant;
 // pub mod gov;
@@ -14,6 +14,9 @@ pub mod sdk;
 // pub mod staking;
 // pub mod treasury;
 // pub mod wasm;
+
+#[macro_use]
+mod internal;
 
 pub use sdk::*;
 
