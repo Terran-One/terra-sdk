@@ -7,7 +7,8 @@ pub struct MsgRevokeAuthorization {
 pub struct MsgGrantAuthorization {
     pub granter: AccAddress,
     pub grantee: AccAddress,
-    pub grant: AuthorizationGrant,
+    /// TODO: type
+    pub grant: String,
 }
 
 pub struct MsgExecAuthorized {

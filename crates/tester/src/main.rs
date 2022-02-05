@@ -1,4 +1,4 @@
-use terra_sdk::core::wasm::*;
+use terra_sdk_core::sdk::*;
 
 fn main() {
     println!("Hello, world!");

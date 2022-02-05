@@ -1,3 +1,4 @@
+use crate::Coins;
 pub struct MsgSend {
     pub from_address: AccAddress,
     pub to_address: AccAddress,
