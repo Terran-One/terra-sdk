@@ -50,14 +50,6 @@ impl AccPubKey {
     pub fn is_valid(&self) -> bool {
         Self::validate(self.0.clone())
     }
-
-    pub fn to_acc_address(self) -> AccAddress {
-        self.into()
-    }
-
-    pub fn to_val_pubkey(self) -> ValPubKey {
-        <ValPubKey>::from(self)
-    }
 }
 
 impl FromStr for AccPubKey {
@@ -135,14 +127,6 @@ impl ValPubKey {
 
     pub fn is_valid(&self) -> bool {
         Self::validate(self.0.clone())
-    }
-
-    pub fn to_acc_pubkey(self) -> AccPubKey {
-        <AccPubKey>::from(self)
-    }
-
-    pub fn to_val_address(self) -> ValAddress {
-        <ValAddress>::from(self)
     }
 }
 
