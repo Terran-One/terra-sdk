@@ -1,16 +1,15 @@
+use std::str::FromStr;
+
 use crate::sdk::numeric::{Dec, Uint128};
 use lazy_static::lazy_static;
 use regex::Regex;
-use std::{
-    convert::Into,
-    ops::{Add, Div, Mul, Rem, Sub},
-};
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Coin {
     pub denom: String,
     pub amount: Uint128,
 }
 
-const NO_DENOM: &str = "";
+pub const NO_DENOM: &str = "";
 
 impl Coin {
     pub fn new(denom: impl Into<String>, amount: impl Into<Uint128>) -> Self {
@@ -39,79 +38,11 @@ impl Coin {
     }
 }
 
-impl Add for Coin {
-    type Output = Self;
-    fn add(self, rhs: Self) -> Self {
-        if self.denom != rhs.denom {
-            panic!("Cannot add coins with different denoms");
-        }
-        Coin {
-            denom: self.denom,
-            amount: self.amount + rhs.amount,
-        }
-    }
-}
+impl FromStr for Coin {
+    type Err = String;
 
-impl<A: Into<Uint128>> Add<A> for Coin {
-    type Output = Self;
-    fn add(self, rhs: A) -> Self {
-        Coin {
-            denom: self.denom,
-            amount: self.amount + rhs.into(),
-        }
-    }
-}
-
-impl Sub for Coin {
-    type Output = Self;
-    fn sub(self, rhs: Self) -> Self {
-        if self.denom != rhs.denom {
-            panic!("Cannot subtract coins with different denoms");
-        }
-        Coin {
-            denom: self.denom,
-            amount: self.amount - rhs.amount,
-        }
-    }
-}
-
-impl<T: Into<Uint128>> Sub<T> for Coin {
-    type Output = Self;
-    fn sub(self, rhs: T) -> Self {
-        Coin {
-            denom: self.denom,
-            amount: self.amount - rhs.into(),
-        }
-    }
-}
-
-impl<T: Into<Uint128>> Div<T> for Coin {
-    type Output = Self;
-    fn div(self, rhs: T) -> Self {
-        Coin {
-            denom: self.denom,
-            amount: self.amount / rhs.into(),
-        }
-    }
-}
-
-impl<T: Into<Uint128>> Mul<T> for Coin {
-    type Output = Self;
-    fn mul(self, rhs: T) -> Self {
-        Coin {
-            denom: self.denom,
-            amount: self.amount * rhs.into(),
-        }
-    }
-}
-
-impl<T: Into<Uint128>> Rem<T> for Coin {
-    type Output = Self;
-    fn rem(self, rhs: T) -> Self {
-        Coin {
-            denom: self.denom,
-            amount: self.amount % rhs.into(),
-        }
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Coin::parse(s)
     }
 }
 
@@ -161,7 +92,7 @@ macro_rules! impl_coin_macro_amount_signed {
                     if self < &0 {
                         panic!("coin!(denom, amount) has invalid amount {} < 0", self);
                     }
-                    Uint128::try_from(*self).unwrap()
+                    crate::Uint128::try_from(*self).unwrap()
                 }
             }
         )*
@@ -190,4 +121,3 @@ mod tests {
         let b = Coin::new("uluna", 1u128);
     }
 }
-pub struct Coins {}

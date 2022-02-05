@@ -1,7 +1,7 @@
 use std::convert::{From, Into, TryFrom};
 use std::ops::{Add, Div, Mul, Rem, Sub};
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
 pub struct Uint128(u128);
 
 pub type Int = Uint128;
