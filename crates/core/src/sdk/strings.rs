@@ -2,6 +2,8 @@ use std::convert::{From, Into};
 use std::fmt::Display;
 use std::str::FromStr;
 
+use serde::{Deserialize, Serialize};
+
 pub const ADDR_LEN: usize = 32;
 pub const ACC_ADDRESS_HRP: &str = "terra";
 pub const VAL_ADDRESS_HRP: &str = "terravaloper";
@@ -10,18 +12,25 @@ pub const ACC_PUBKEY_HRP: &str = "terrapub";
 pub const VAL_PUBKEY_HRP: &str = "terravaloperpub";
 pub const VALCONS_PUBKEY_HRP: &str = "terravalconspub";
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
+#[serde(transparent)]
 pub struct AccAddress(pub String);
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
+#[serde(transparent)]
 pub struct ValAddress(pub String);
-#[derive(Debug, PartialEq, Eq, Clone)]
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
+#[serde(transparent)]
 pub struct ValConsAddress(pub String);
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
+#[serde(transparent)]
 pub struct AccPubKey(pub String);
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
+#[serde(transparent)]
 pub struct ValPubKey(pub String);
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
+#[serde(transparent)]
 pub struct ValConsPubKey(pub String);
 
 macro_rules! impl_bech32_string {
@@ -65,6 +74,20 @@ macro_rules! impl_bech32_string {
 
             pub fn as_str(&self) -> &str {
                 self.0.as_str()
+            }
+        }
+
+        // STRING
+
+        impl From<String> for $t {
+            fn from(s: String) -> Self {
+                Self(s)
+            }
+        }
+
+        impl From<&str> for $t {
+            fn from(s: &str) -> Self {
+                Self(s.to_string())
             }
         }
 
@@ -197,5 +220,31 @@ mod tests {
     fn it_validates_val_cons_address() {
         let a = ValConsAddress::validate("terravalcons1relcztayk87c3r529rqf3fwdmn8hr6rhcgyrxd");
         assert_eq!(a, true);
+    }
+
+    #[test]
+    fn it_validates_acc_pubkey() {
+        let a = AccPubKey::validate(
+            "terravaloperpub1addwnpepqt8ha594svjn3nvfk4ggfn5n8xd3sm3cz6ztxyugwcuqzsuuhhfq5y7accr",
+        );
+        assert_eq!(a, false);
+
+        let b = AccPubKey::validate("terrapub1x46rqay4d3cssq8gxxvqz8xt6nwlz4tdh39t77");
+        assert_eq!(b, true);
+
+        let c = AccPubKey::new("terrapub1x46rqay4d3cssq8gxxvqz8xt6nwlz4tdh39t77").is_ok();
+        assert_eq!(c, true);
+    }
+
+    #[test]
+    fn it_validates_val_pubkey() {
+        let a = ValPubKey::validate("terravaloper12g4nkvsjjnl0t7fvq3hdcw7y8dc9fq69nyeu9q");
+        assert_eq!(a, false);
+
+        let b = ValPubKey::validate("terravaloperpub12g4nkvsjjnl0t7fvq3hdcw7y8dc9fq69gvd5ag");
+        assert_eq!(b, true);
+
+        let c = ValPubKey::new("terravaloperpub12g4nkvsjjnl0t7fvq3hdcw7y8dc9fq69gvd5ag").is_ok();
+        assert_eq!(c, true);
     }
 }

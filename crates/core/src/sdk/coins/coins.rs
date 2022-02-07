@@ -1,4 +1,6 @@
 use crate::coin::*;
+use serde::ser::SerializeSeq;
+use serde::{Deserialize, Serialize};
 use std::cmp::{Eq, PartialEq};
 use std::collections::HashMap;
 use std::str::FromStr;
@@ -6,17 +8,56 @@ use std::str::FromStr;
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Coins(HashMap<String, Coin>);
 
+impl Serialize for Coins {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut seq = serializer.serialize_seq(Some(self.len()))?;
+        for x in self.iter() {
+            seq.serialize_element(x)?;
+        }
+        seq.end()
+    }
+}
+struct CoinsVisitor;
+
+impl<'de> serde::de::Visitor<'de> for CoinsVisitor {
+    type Value = Coins;
+
+    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+        formatter.write_str("a sequence of Coin")
+    }
+
+    fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
+    where
+        A: serde::de::SeqAccess<'de>,
+    {
+        let mut coins = Coins::new();
+        while let Some(x) = seq.next_element()? {
+            coins.insert_coin(x);
+        }
+        Ok(coins)
+    }
+}
+
+impl<'de> Deserialize<'de> for Coins {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        deserializer.deserialize_seq(CoinsVisitor)
+    }
+}
+
 impl Coins {
     pub fn new() -> Self {
         Coins(HashMap::new())
     }
 
-    pub fn add_coin(&mut self, coin: Coin) {
+    pub fn insert_coin(&mut self, coin: Coin) -> &mut Self {
         self.0.insert(coin.denom.clone(), coin);
-    }
-
-    pub fn remove_coin(&mut self, coin: Coin) {
-        self.0.remove(&coin.denom);
+        self
     }
 
     pub fn get(&self, denom: impl Into<String>) -> Option<&Coin> {
@@ -31,7 +72,7 @@ impl Coins {
         self.0.insert(denom.into(), coin.clone());
     }
 
-    pub fn remove(&mut self, denom: &str) {
+    pub fn remove_denom(&mut self, denom: &str) {
         self.0.remove(denom);
     }
 
@@ -119,5 +160,23 @@ where
 {
     fn from(coin_list: Vec<T>) -> Self {
         Self::from_iter(coin_list.into_iter())
+    }
+}
+
+impl From<String> for Coins {
+    fn from(s: String) -> Self {
+        Self::from_str(&s).unwrap_or_default()
+    }
+}
+
+impl From<&str> for Coins {
+    fn from(s: &str) -> Self {
+        Self::from_str(s).unwrap_or_default()
+    }
+}
+
+impl Default for Coins {
+    fn default() -> Self {
+        Coins::new()
     }
 }

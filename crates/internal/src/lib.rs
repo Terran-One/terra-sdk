@@ -1,16 +1,7 @@
 use proc_macro::TokenStream;
-mod msg;
+mod msg_type;
 
-#[proc_macro_derive(Msg, attributes(msg_type, msg_type_proto))]
-pub fn derive_msg(input: TokenStream) -> TokenStream {
-    msg::do_derive_msg(input)
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
-    }
+#[proc_macro_derive(MsgType, attributes(msgtype, msgtype_pb))]
+pub fn derive_msg_type(input: TokenStream) -> TokenStream {
+    msg_type::do_derive_msg_type(input)
 }

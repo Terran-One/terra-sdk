@@ -20,6 +20,9 @@ mod internal;
 
 pub use sdk::*;
 
+pub mod traits;
+pub use traits::*;
+
 // use terra_sdk_internal::Msg;
 
 // pub trait Msg {

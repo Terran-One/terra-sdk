@@ -1,10 +1,28 @@
+use serde::{Deserialize, Serialize};
 use std::convert::{From, Into, TryFrom};
 use std::ops::{Add, Div, Mul, Rem, Sub};
-
+use std::str::FromStr;
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
 pub struct Uint128(u128);
 
-pub type Int = Uint128;
+impl Serialize for Uint128 {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl<'de> Deserialize<'de> for Uint128 {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        Uint128::from_str(&s).map_err(serde::de::Error::custom)
+    }
+}
 
 impl Uint128 {
     pub fn new<T: Into<Uint128>>(value: T) -> Self {
@@ -22,24 +40,16 @@ impl std::default::Default for Uint128 {
     }
 }
 
-impl TryFrom<&str> for Uint128 {
-    type Error = &'static str;
+impl FromStr for Uint128 {
+    type Err = String;
 
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let value = value.trim();
-        if value.is_empty() {
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let s = s.trim();
+        if s.is_empty() {
             return Ok(Uint128::default());
         }
-        let value = value.parse::<u128>().map_err(|_| "invalid number")?;
+        let value = s.parse::<u128>().map_err(|_| "invalid number")?;
         Ok(Uint128(value))
-    }
-}
-
-impl TryFrom<String> for Uint128 {
-    type Error = &'static str;
-
-    fn try_from(value: String) -> Result<Self, Self::Error> {
-        Self::try_from(value.as_str())
     }
 }
 
@@ -145,6 +155,14 @@ impl std::fmt::Display for Uint128 {
 
 #[cfg(test)]
 mod tests {
+
+    use super::*;
+    use serde_json::*;
+
     #[test]
-    fn it_works() {}
+    fn it_serializes() {
+        let value = Uint128::from_str("1000000").unwrap();
+        let serialized = serde_json::to_string(&value).unwrap();
+        println!("{}", serialized);
+    }
 }

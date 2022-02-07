@@ -3,7 +3,10 @@ use std::str::FromStr;
 use crate::sdk::numeric::{Dec, Uint128};
 use lazy_static::lazy_static;
 use regex::Regex;
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Coin {
     pub denom: String,
     pub amount: Uint128,
@@ -33,7 +36,7 @@ impl Coin {
             .as_str();
         Ok(Coin {
             denom: denom.to_string(),
-            amount: Uint128::try_from(amount)?,
+            amount: Uint128::from_str(amount)?,
         })
     }
 }
@@ -119,5 +122,12 @@ mod tests {
     fn macro_works() {
         let a = coin!("uluna", 1);
         let b = Coin::new("uluna", 1u128);
+    }
+
+    #[test]
+    fn it_serializes() {
+        let a = coin!("uluna", 1);
+        let json = serde_json::to_string(&a).unwrap();
+        println!("{}", json);
     }
 }
