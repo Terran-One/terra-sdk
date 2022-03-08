@@ -1,5 +1,5 @@
-pub mod coin;
-pub use coin::*;
+pub mod coins;
+pub use coins::*;
 
 pub mod strings;
 pub use strings::*;

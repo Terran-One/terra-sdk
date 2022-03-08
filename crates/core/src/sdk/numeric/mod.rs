@@ -1,2 +1,5 @@
-pub struct Uint128(u128);
-pub struct Dec(String);
+pub mod dec;
+pub mod uint128;
+
+pub use dec::*;
+pub use uint128::*;
